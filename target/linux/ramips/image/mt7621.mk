@@ -3556,3 +3556,13 @@ define Device/zyxel_wsm20
   KERNEL_INITRAMFS := kernel-bin | lzma | fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb | znet-header V1.00(ABZF.0)C0
 endef
 TARGET_DEVICES += zyxel_wsm20
+
+define Device/kroks_kndrt41r1
+ $(Device/nand)
+ IMAGE_SIZE := 30m
+ DEVICE_VENDOR := Kroks
+ DEVICE_MODEL := Rt-Cse4 mXUW DS SAP-G 
+ DEVICE_PACKAGES := kmod-usb2
+ SUPPORTED_DEVICES += kndrt41r1
+endef
+TARGET_DEVICES += kroks_kndrt41r1
