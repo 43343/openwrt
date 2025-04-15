@@ -83,6 +83,14 @@ define U-Boot/mt7621_zbtlink_zbt-wg3526-16m
   BUILD_SUBTARGET:=mt7621
   UBOOT_IMAGE:=u-boot-mt7621.bin
 endef
+define U-Boot/mt7621_rt-csw4_mxuw_ds_sap-g
+  NAME:=Kroks Rt-Cse4 mXUW DS SAP-G
+  UBOOT_CONFIG:= mt7621_rt-csw4_mxuw_ds_sap-g
+  BUILD_DEVICES:= rt-cs4_mxuw_ds_sap-g
+  BUILD_TARGET:=ramips
+  BUILD_SUBTARGET:=mt7621
+  UBOOT_IMAGE:=u-boot-mt7621.bin
+endef
 
 define U-Boot/mt7622_rfb1
   NAME:=MT7622 Reference Board 1
@@ -835,12 +843,14 @@ define U-Boot/mt7988_rfb-sd
   DEPENDS:=+trusted-firmware-a-mt7988-sdmmc-comb
 endef
 
+
 UBOOT_TARGETS := \
 	mt7620_mt7530_rfb \
 	mt7620_rfb \
 	mt7621_nand_rfb \
 	mt7621_rfb \
 	mt7621_zbtlink_zbt-wg3526-16m \
+	mt7621_rt-csw4_mxuw_ds_sap-g \
 	mt7622_bananapi_bpi-r64-emmc \
 	mt7622_bananapi_bpi-r64-sdmmc \
 	mt7622_bananapi_bpi-r64-snand \
