@@ -127,7 +127,7 @@
 };
 &state_default {
 	gpio {
-		groups = "wdt" , "uart3";
+		groups = "wdt";
 		function = "gpio";
 	};
 };
