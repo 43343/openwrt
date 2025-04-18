@@ -5,10 +5,8 @@
 #include <dt-bindings/leds/common.h>
 
 /{
-	compatible = "kroks,kndrt41r1", "mediatek,mt7621-soc";
-	model = "Kroks KNdRt41R1";
 	chosen {
-		bootargs = "console=ttyS0,115200"
+		bootargs = "console=ttyS0,115200";
 	};
 
 	aliases {
@@ -16,20 +14,35 @@
 		led-failsafe = &led_status;
 		led-running = &led_status;
 		led-upgrade = &led_status;
-		serial1 = &uart1;
+		label-mac-device = &gmac0;
 	};
 	leds {
 		compatible = "gpio-leds";
-		
-		led-status: led-0 {
+
+		led_status: status {
 			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_GREEN>;
-			gpios = <&gpio 18 GPIO_ACTIVE_LOW>;
+			color = <LED_COLOR_ID_WHITE>;
+			gpios = <&gpio 6 GPIO_ACTIVE_LOW>;
 		};
+		wifi-0 {
+			function = LED_FUNCTION_WLAN;
+			function-enumerator = <24>;
+			color = <LED_COLOR_ID_WHITE>;
+			gpios = <&gpio 13 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "phy0tpt";
+		};
+		wifi-1 {
+			function = LED_FUNCTION_WLAN;
+			function-enumerator = <50>;
+			color = <LED_COLOR_ID_WHITE>;
+			gpios = <&gpio 13 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "phy1tpt";
+		};
+		
 	};
 
 	keys {
-		compatible = "gpio-keys"
+		compatible = "gpio-keys";
 		
 		reset {
 			label = "reset";
@@ -37,6 +50,141 @@
 			linux,code = <KEY_RESTART>;
 		};
 	};
-	
-	
+	gpio_export {
+		compatible = "gpio-export";
+		#size-cells = <0>;
+
+		modem1power {
+			gpio-export,name = "modem1power";
+			gpio-export,output = <0>;
+			gpios = <&gpio 1 GPIO_ACTIVE_HIGH>;
+		};
+
+		usb1power {
+			gpio-export,name = "usb1power";
+			gpio-export,output = <0>;
+			gpios = <&gpio 2 GPIO_ACTIVE_HIGH>;
+		};
+
+		modem1sim1 {
+			gpio-export,name = "modem1sim1";
+			gpio-export,output = <1>;
+			gpios = <&gpio 3 GPIO_ACTIVE_HIGH>;
+		};
+
+		modem1sim2 {
+			gpio-export,name = "modem1sim2";
+			gpio-export,output = <0>;
+			gpios = <&gpio 4 GPIO_ACTIVE_HIGH>;
+		};
+	};
 };
+
+&spi0 {
+	status = "okay";
+
+	flash@0 {
+		compatible = "jedec,spi-nor";
+		reg = <0>;
+		spi-max-frequency = <25000000>;
+		broken-flash-reset;
+		m25p,fast-read;
+
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			partition@0 {
+				label = "u-boot";
+				reg = <0x0 0x30000>;
+				read-only;
+			};
+
+			partition@30000 {
+				label = "u-boot-env";
+				reg = <0x30000 0x10000>;
+			};
+
+			factory: partition@40000 {
+				label = "factory";
+				reg = <0x40000 0x10000>;
+				read-only;
+			};
+
+			partition@50000 {
+				compatible = "denx,uimage";
+				label = "firmware";
+				reg = <0x50000 0x1eb0000>;
+			};
+
+			partition@1f00000 {
+				label = "memory";
+				reg = <0x1f00000 0x100000>;
+			};
+		};
+	};
+};
+&state_default {
+	gpio_reset {
+		groups = "wdt";
+		function = "gpio";
+	};
+	gpio_status {
+		groups = "uart3";
+		function = "gpio";
+	};
+};
+&factory {
+	nvmem: nvmem-layout {
+		compatible = "fixed-layout";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		macaddr_factory_28: macaddr@28 {
+			reg = <0x28 0x6>;
+		};
+
+		macaddr_factory_2e: macaddr@2e {
+			reg = <0x2e 0x6>;
+		};
+	};
+};
+&gmac0 {
+	nvmem-cells = <&macaddr_factory_28>;
+	nvmem-cell-names = "mac-address";
+};
+
+&gmac1 {
+	status = "okay";
+	label = "wan";
+	phy-handle = <&ethphy0>;
+
+	nvmem-cells = <&macaddr_factory_2e>;
+	nvmem-cell-names = "mac-address";
+};
+
+&switch0 {
+	ports {
+		port@1 {
+			status = "okay";
+			label = "lan1";
+		};
+
+		port@2 {
+			status = "okay";
+			label = "lan2";
+		};
+
+		port@3 {
+			status = "okay";
+			label = "lan3";
+		};
+	};
+};
+
+&pcie {
+	reset-gpios = <&gpio 19 GPIO_ACTIVE_LOW>,
+		      <&gpio 0 GPIO_ACTIVE_LOW>;
+};
+

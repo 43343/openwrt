@@ -1,0 +1,6 @@
+#include "mt7621_kroks.dtsi"
+
+/ {
+	compatible = "kroks,kndrt41r1", "mediatek, mt7621-soc";
+	model = "Kroks KNdRt41R1";
+};
